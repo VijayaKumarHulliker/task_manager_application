@@ -2,7 +2,9 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import '../models/task_model.dart';
 import '../services/database_service.dart';
 
+
 final taskSortOrderProvider = StateProvider<String>((ref) => "date");
+
 
 final taskProvider = StateNotifierProvider<TaskNotifier, List<Task>>((ref) {
   return TaskNotifier(ref);
@@ -15,6 +17,7 @@ class TaskNotifier extends StateNotifier<List<Task>> {
 
   final DatabaseService _dbService = DatabaseService();
   final Ref ref;
+
 
   Future<void> loadTasks() async {
     final sortOrder = ref.read(taskSortOrderProvider);
@@ -31,6 +34,7 @@ class TaskNotifier extends StateNotifier<List<Task>> {
     state = tasks;
   }
 
+
   Future<void> addTask(Task task) async {
     await _dbService.insertTask(task);
     loadTasks();
@@ -41,8 +45,9 @@ class TaskNotifier extends StateNotifier<List<Task>> {
     loadTasks();
   }
 
+
   Future<void> updateTask(Task task) async {
-    await _dbService.updateTask(task);
+    await _dbService.updateTask(task); 
     loadTasks();
   }
 }

@@ -1,19 +1,19 @@
 class Task {
-  final int? id;
-  final String title;
-  final String description;
-  final bool isCompleted;
-  final DateTime createdAt;
+  int? id; 
+  String title;
+  String description;
+  bool isCompleted;
+  DateTime createdAt;
 
   Task({
-    this.id,
+    this.id, 
     required this.title,
     required this.description,
-    this.isCompleted = false,
+    required this.isCompleted,
     required this.createdAt,
   });
 
- 
+  
   Map<String, dynamic> toMap() {
     return {
       'id': id,
@@ -24,7 +24,7 @@ class Task {
     };
   }
 
- 
+
   factory Task.fromMap(Map<String, dynamic> map) {
     return Task(
       id: map['id'],
@@ -35,4 +35,4 @@ class Task {
     );
   }
 }
-   
+

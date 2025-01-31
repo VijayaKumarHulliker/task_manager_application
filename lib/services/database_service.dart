@@ -30,16 +30,19 @@ class DatabaseService {
     );
   }
 
+  
   Future<void> insertTask(Task task) async {
     final db = await database;
     await db.insert('tasks', task.toMap(), conflictAlgorithm: ConflictAlgorithm.replace);
   }
+
 
   Future<List<Task>> getTasks() async {
     final db = await database;
     final List<Map<String, dynamic>> maps = await db.query('tasks');
     return maps.map((task) => Task.fromMap(task)).toList();
   }
+
 
   Future<void> deleteTask(int id) async {
     final db = await database;
