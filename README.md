@@ -1,16 +1,34 @@
-# task_manager_app
+# 📋 Task Manager App ✅  
 
-A new Flutter project.
+A **Flutter Task Management App** built using **MVVM Architecture** and **Riverpod for State Management**.  
+It supports **SQLite for local storage**, **Hive for user preferences**, **Dark Mode**, and **Sorting Features**.  
 
-## Getting Started
+---
 
-This project is a starting point for a Flutter application.
+## 🚀 Features  
+✔️ **Add, Edit, Delete, and Mark Tasks as Completed**  
+✔️ **Persistent Data Storage with SQLite**  
+✔️ **User Preferences (Dark Mode & Sorting) Stored in Hive**  
+✔️ **Responsive UI for Mobile & Tablet**  
+✔️ **MVVM Architecture for Better Code Structure**  
 
-A few resources to get you started if this is your first Flutter project:
+## 📥 Installation & Running the App  
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+🔹 Step 1: Clone the Repository 
+```sh
+git clone https://github.com/your-username/task_manager_app.git
+cd task_manager_app
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+🔹 Step 2: Install Dependencies
+flutter pub get
+
+🔹 Step 3: Run the App
+flutter run
+
+🛠 Dependencies Used
+>Flutter SDK
+>Riverpod (State Management)
+>SQLite (Local Database)
+>Hive (User Preferences)
+>Flutter Local Notifications (For Task Reminders)
+
