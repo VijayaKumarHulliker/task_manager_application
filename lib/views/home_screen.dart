@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_manager_app/viewmodels/task_provider.dart';
-import 'package:task_manager_app/views/settings_screen.dart';
+import 'task_detail_screen.dart';  
 import '../models/task_model.dart';
-import 'task_detail_screen.dart';
+import '../views/settings_screen.dart';
 
 class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
@@ -11,24 +11,20 @@ class HomeScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final tasks = ref.watch(taskProvider);
-    TextEditingController titleController = TextEditingController();
-    TextEditingController descriptionController = TextEditingController();
 
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5), 
       appBar: AppBar(
+        backgroundColor: Colors.deepPurple,  
         title: const Text(
           "Task Manager",
-          style: TextStyle(fontSize: 25, fontWeight: FontWeight.bold),
+          style: TextStyle(fontSize: 26, fontWeight: FontWeight.bold),
         ),
         centerTitle: true,
-        elevation: 4, 
-        backgroundColor: Colors.deepPurple, 
-        foregroundColor: Colors.white,
         actions: [
           IconButton(
-            icon: const Icon(Icons.settings, color: Colors.white),
+            icon: const Icon(Icons.settings),
             onPressed: () {
+            
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) => const SettingsScreen()),
@@ -41,61 +37,93 @@ class HomeScreen extends ConsumerWidget {
           ? const Center(
               child: Text(
                 "No tasks available. Add some!",
-                style: TextStyle(fontSize: 20, fontWeight: FontWeight.w500, color: Colors.grey),
+                style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
               ),
             )
-          : Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 10.0),
-              child: ListView.builder(
-                itemCount: tasks.length,
-                itemBuilder: (context, index) {
-                  final task = tasks[index];
-                  return Card(
-                    elevation: 3,
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
-                    child: ListTile(
-                      title: Text(
-                        task.title,
-                        style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text(
-                        task.description,
-                        style: const TextStyle(fontSize: 15, color: Colors.grey),
-                      ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => TaskDetailScreen(task: task),
-                          ),
-                        );
-                      },
-                      trailing: IconButton(
-                        icon: const Icon(Icons.delete, color: Colors.redAccent),
-                        onPressed: () => ref.read(taskProvider.notifier).deleteTask(task.id!),
+          : ListView.builder(
+              itemCount: tasks.length,
+              itemBuilder: (context, index) {
+                final task = tasks[index];
+                return Card(
+                  elevation: 4,
+                  margin: const EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: ListTile(
+                    contentPadding: const EdgeInsets.all(16),
+                    title: Text(
+                      task.title,
+                      style: TextStyle(
+                        fontSize: 20,
+                        fontWeight: FontWeight.w500,
+                        color: Colors.deepPurple,
                       ),
                     ),
-                  );
-                },
-              ),
+                    subtitle: Text(task.description),
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                       
+                        IconButton(
+                          icon: Icon(
+                            task.isCompleted
+                                ? Icons.check_circle
+                                : Icons.radio_button_unchecked,
+                            color: task.isCompleted ? Colors.green : Colors.grey,
+                          ),
+                          onPressed: () {
+                            final updatedTask = Task(
+                              id: task.id, 
+                              title: task.title,
+                              description: task.description,
+                              isCompleted: !task.isCompleted,
+                              createdAt: task.createdAt,
+                            );
+                          
+                            ref.read(taskProvider.notifier).updateTask(updatedTask);
+                          },
+                        ),
+                        
+                        IconButton(
+                          icon: const Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            ref.read(taskProvider.notifier).deleteTask(task.id!);
+                          },
+                        ),
+                      ],
+                    ),
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => TaskDetailScreen(task: task),
+                        ),
+                      );
+                    },
+                  ),
+                );
+              },
             ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          _showAddTaskDialog(context, ref, titleController, descriptionController);
+       
+          _showAddTaskDialog(context, ref);
         },
-        shape: const CircleBorder(),
         backgroundColor: Colors.deepPurple,
-        child: const Icon(Icons.add, color: Colors.white, size: 30),
+        child: const Icon(Icons.add),
       ),
     );
   }
 
-  void _showAddTaskDialog(BuildContext context, WidgetRef ref, TextEditingController titleController, TextEditingController descriptionController) {
+  void _showAddTaskDialog(BuildContext context, WidgetRef ref) {
+    TextEditingController titleController = TextEditingController();
+    TextEditingController descriptionController = TextEditingController();
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return AlertDialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
           title: const Text(
             "Add New Task",
             style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
@@ -105,20 +133,23 @@ class HomeScreen extends ConsumerWidget {
             children: [
               TextField(
                 controller: titleController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Task Title",
-                  prefixIcon: const Icon(Icons.title),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+                  ),
                 ),
               ),
-              const SizedBox(height: 10),
+              const SizedBox(height: 12),
               TextField(
                 controller: descriptionController,
-                maxLines: 3,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: "Task Description",
-                  prefixIcon: const Icon(Icons.description),
-                  border: OutlineInputBorder(borderRadius: BorderRadius.circular(10)),
+                  border: OutlineInputBorder(),
+                  focusedBorder: OutlineInputBorder(
+                    borderSide: BorderSide(color: Colors.deepPurple, width: 2),
+                  ),
                 ),
               ),
             ],
@@ -126,38 +157,31 @@ class HomeScreen extends ConsumerWidget {
           actions: [
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.pop(context); 
               },
-              child: const Text("Cancel", style: TextStyle(fontSize: 16, color: Colors.redAccent)),
+              child: const Text("Cancel"),
             ),
-            ElevatedButton(
+            TextButton(
               onPressed: () {
                 final taskTitle = titleController.text;
                 final taskDescription = descriptionController.text;
 
                 if (taskTitle.isNotEmpty && taskDescription.isNotEmpty) {
                   ref.read(taskProvider.notifier).addTask(Task(
-                        title: taskTitle,
-                        description: taskDescription,
-                        isCompleted: false,
-                        createdAt: DateTime.now(),
-                      ));
-
-                  titleController.clear();
-                  descriptionController.clear();
-
-                  Navigator.pop(context); // Close the dialog
+                    title: taskTitle,
+                    description: taskDescription,
+                    isCompleted: false, 
+                    createdAt: DateTime.now(),
+                  ));
+                  Navigator.pop(context); 
                 } else {
+                  
                   ScaffoldMessenger.of(context).showSnackBar(
-                    const SnackBar(
-                      content: Text("Please fill in both fields"),
-                      backgroundColor: Colors.redAccent,
-                    ),
+                    const SnackBar(content: Text("Please fill in both fields")),
                   );
                 }
               },
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.deepPurple),
-              child: const Text("Add Task", style: TextStyle(fontSize: 16, color: Colors.white)),
+              child: const Text("Add Task"),
             ),
           ],
         );

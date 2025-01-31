@@ -3,9 +3,8 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:task_manager_app/viewmodels/task_provider.dart';
 import '../models/task_model.dart';
 
-
 class TaskDetailScreen extends ConsumerWidget {
-  final Task task;
+  final Task task; 
   const TaskDetailScreen({super.key, required this.task});
 
   @override
@@ -15,37 +14,62 @@ class TaskDetailScreen extends ConsumerWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Task Details'),
+        title: const Text("Edit Task"),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.save),
+            onPressed: () {
+              final updatedTask = Task(
+                id: task.id, 
+                title: titleController.text,
+                description: descriptionController.text,
+                isCompleted: task.isCompleted, 
+                createdAt: task.createdAt,
+              );
+
+              ref.read(taskProvider.notifier).updateTask(updatedTask);
+
+              Navigator.pop(context); 
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             TextField(
-              controller: titleController,
-              decoration: const InputDecoration(labelText: 'Title'),
+              controller: titleController,  
+              decoration: const InputDecoration(labelText: 'Task Title'),
             ),
+            const SizedBox(height: 10),
             TextField(
-              controller: descriptionController,
-              decoration: const InputDecoration(labelText: 'Description'),
+              controller: descriptionController, 
+              decoration: const InputDecoration(labelText: 'Task Description'),
             ),
             const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                final updatedTask = Task(
-                  id: task.id,  
-                  title: titleController.text,
-                  description: descriptionController.text,
-                  isCompleted: task.isCompleted,
-                  createdAt: task.createdAt,
-                );
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text("Status:"),
+                Switch(
+                  value: task.isCompleted,
+                  onChanged: (bool value) {
+                    final updatedTask = Task(
+                      id: task.id,
+                      title: titleController.text,
+                      description: descriptionController.text,
+                      isCompleted: value,  
+                      createdAt: task.createdAt,
+                    );
 
-                
-                ref.read(taskProvider.notifier).updateTask(updatedTask);
-
-                Navigator.pop(context);  
-              },
-              child: const Text('Save Changes'),
+               
+                    ref.read(taskProvider.notifier).updateTask(updatedTask);
+                  },
+                ),
+                Text(task.isCompleted ? "Completed" : "Pending"),  
+              ],
             ),
           ],
         ),
